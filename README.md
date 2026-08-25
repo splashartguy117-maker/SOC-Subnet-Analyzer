@@ -20,3 +20,22 @@ Esta herramienta está diseñada para comportarse como un comando nativo en tu s
    ```bash
    git clone [URL_DE_TU_REPOSITORIO]
    cd SOC-Subnet-Analyzer
+## ⚙️ Instalación en Linux (Integración al sistema)
+
+Esta herramienta está diseñada para comportarse como un comando nativo en tu sistema Linux.
+
+**1. Clona el repositorio**
+```bash
+git clone https://github.com/splashartguy117-maker/SOC-Subnet-Analyzer.git
+cd SOC-Subnet-Analyzer
+```
+
+**2. Da permisos de ejecución al script**
+```bash
+chmod +x subnet_analyzer.py
+```
+
+**3. Instala globalmente (opcional)**
+```bash
+sudo ln -s $(pwd)/subnet_analyzer.py /usr/local/bin/subnet-analyzer
+```
