@@ -26,3 +26,12 @@ Herramienta profesional de análisis de subredes con inteligencia de amenazas, d
 ```bash
 git clone https://github.com/splashartguy117-maker/SOC-Subnet-Analyzer.git
 cd SOC-Subnet-Analyzer
+🚀 v2.0 - Herramienta profesional con integración AbuseIPDB
+
+- ✅ Integración con API de AbuseIPDB para consultar reputación de IPs
+- 🎨 Salida con colores en terminal (colorama)
+- 🔥 Generación automática de reglas de firewall (iptables)
+- 🔐 Sistema de configuración con archivo .env para API Keys
+- 📄 Reportes mejorados en formato .txt
+- 📚 Documentación completa en README.md
+- 📦 Dependencias gestionadas con requirements.txt"
