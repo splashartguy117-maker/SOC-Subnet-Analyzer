@@ -1,363 +1,115 @@
-# 🔍 SOC Subnet Analyzer
+🛡️ SOC Subnet Analyzer
 
-[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)]()
+Una herramienta rápida y ligera desarrollada en Python para el cálculo y análisis de subredes orientada a entornos Blue Team, análisis de redes e investigaciones de respuesta a incidentes en un SOC (Security Operations Center).
 
-Herramienta profesional de análisis de subredes con inteligencia de amenazas, diseñada para equipos de **Blue Team** y **Respuesta a Incidentes**.
+Permite a los analistas de seguridad realizar triaje rápido de direcciones IP, determinar rangos de red utilizables, calcular máscaras de subred en notación CIDR y de comodín (wildcard masks), facilitando la identificación de activos y el aislamiento de segmentos de red comprometidos.
 
-Al proporcionar una IP comprometida y su notación CIDR, el script calcula instantáneamente la dirección de red, el broadcast y el rango de hosts válidos, además de consultar la reputación de la IP en **AbuseIPDB** y generar reglas de firewall listas para usar.
+⚡ Características Principales
 
----
+Cálculo de Subredes en Notación CIDR: Obtén dirección de red, dirección de broadcast, primera/última IP utilizable y total de hosts.
 
-## 🎯 Características
+Máscaras de Comodín (Wildcard Masks): Útil para la configuración rápida de reglas de Firewall, listas de control de acceso (ACLs) y firmas en SIEM / IDS.
 
-- ✅ Cálculo instantáneo de subredes IPv4 (red, broadcast, rango de hosts)
-- 🛡️ **Consulta de reputación** de IPs en AbuseIPDB (detección de amenazas)
-- 🔥 **Generación de reglas de firewall** (iptables) para aislar redes infectadas
-- 📄 **Reportes automáticos** en formato `.txt` para bitácoras de incidentes
-- 🎨 **Salida con colores** para mejorar la legibilidad en terminal
-- 🔐 **Manejo seguro de API Keys** mediante archivo `.env`
-- 🌍 **Compatible con cualquier distribución de Linux**
+Diseño Ligero: Ejecución directa en terminal sin dependencias externas pesadas.
 
----
+Integración CLI Global: Configurable como un comando ejecutable desde cualquier directorio del sistema (subnet-analyzer).
 
-## 📋 Requisitos previos
+📁 Estructura del Repositorio
 
-- **Python 3.8 o superior**
-- **pip** (gestor de paquetes de Python)
-- **Git** (para clonar el repositorio)
-- Conexión a Internet (para consultar la API de AbuseIPDB)
+SOC-Subnet-Analyzer/
+├── subnet_analyzer.py      # Script principal del analizador
+├── README.md               # Documentación del proyecto
+└── LICENSE                 # Licencia de uso libre (MIT)
 
----
 
-## 📥 Instalación
+📋 Requisitos Previos
 
-### 1️⃣ Instalar dependencias del sistema
+Sistema Operativo: Linux (Debian, Ubuntu, Kali, Q4OS, etc.) o macOS.
 
-Elige el comando según tu distribución:
+Lenguaje: Python 3.x preinstalado.
 
-| Distribución | Comando |
-|--------------|---------|
-| **Void Linux** | `sudo xbps-install -S python3 python3-pip git` |
-| **Arch / CachyOS / Manjaro** | `sudo pacman -S --needed python python-pip git` |
-| **Debian / Ubuntu / Kali** | `sudo apt update && sudo apt install python3 python3-pip git` |
-| **Fedora / RHEL** | `sudo dnf install python3 python3-pip git` |
-| **openSUSE** | `sudo zypper install python3 python3-pip git` |
+⚙️ Instalación y Configuración como Comando Global
 
----
+Sigue estos pasos para poder invocar la herramienta desde cualquier directorio ejecutando únicamente subnet-analyzer:
 
-### 2️⃣ Clonar el repositorio
+1. Clonar el repositorio
 
-```bash
 git clone https://github.com/splashartguy117-maker/SOC-Subnet-Analyzer.git
 cd SOC-Subnet-Analyzer
-```
 
----
 
-### 3️⃣ Instalar las dependencias de Python
+2. Verificar o añadir el Shebang al script
 
-Tienes **dos opciones**. Elige la que mejor se adapte a tu sistema:
+Asegúrate de que la primera línea del archivo principal (ej. subnet_analyzer.py) contenga el shebang para que el sistema sepa cómo ejecutarlo:
 
-#### 🅰️ Opción A: Instalación con `pip` (recomendada)
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-```bash
-pip install -r requirements.txt
-```
 
-> **⚠️ Nota:** Si tu distribución da el error `externally-managed-environment`, usa la Opción B o agrega la bandera `--break-system-packages`:
-> ```bash
-> pip install --user --break-system-packages -r requirements.txt
-> ```
+3. Dar permisos de ejecución al archivo
 
-#### 🅱️ Opción B: Instalación con paquetes del sistema (más limpia)
-
-| Distribución | Comando |
-|--------------|---------|
-| **Void Linux** | `sudo xbps-install -S python3-requests python3-colorama python3-dotenv` |
-| **Arch / CachyOS** | `sudo pacman -S --needed python-requests python-colorama python-dotenv` |
-| **Debian / Ubuntu** | `sudo apt install python3-requests python3-colorama python3-dotenv` |
-| **Fedora** | `sudo dnf install python3-requests python3-colorama python3-dotenv` |
-
----
-
-### 4️⃣ Configurar tu API Key de AbuseIPDB
-
-1. Crea una cuenta gratuita en [AbuseIPDB](https://www.abuseipdb.com/).
-2. Ve a tu perfil y copia tu **API Key**.
-3. Crea el archivo `.env` en la raíz del proyecto:
-
-```bash
-nano .env
-```
-
-4. Pega el siguiente contenido (reemplaza con tu clave real):
-
-```text
-ABUSEIPDB_API_KEY=tu_clave_aqui
-```
-
-> **🔒 Importante:** No uses comillas, espacios ni caracteres extraños. El archivo debe contener exactamente una línea.
-
-5. Guarda con `Ctrl+O`, `Enter`, `Ctrl+X`.
-
----
-
-### 5️⃣ Dar permisos de ejecución
-
-```bash
 chmod +x subnet_analyzer.py
-```
 
----
 
-### 6️⃣ Instalación global (opcional, pero recomendada)
+4. Crear el enlace simbólico global
 
-Para poder usar la herramienta desde **cualquier carpeta** como un comando nativo:
+Crea un enlace en /usr/local/bin apuntando a la ruta absoluta de tu script. Usa el comando pwd para confirmar tu ubicación exacta antes de enlazar:
 
-```bash
-sudo ln -sf "$(pwd)/subnet_analyzer.py" /usr/local/bin/subnet-analyzer
-```
+# Ejemplo usando la ruta absoluta obtenida con pwd:
+sudo ln -s $(pwd)/subnet_analyzer.py /usr/local/bin/subnet-analyzer
 
-#### Verificar la instalación
 
-```bash
-ls -la /usr/local/bin/subnet-analyzer
-```
+(Si prefieres hacerlo manualmente, sustituye $(pwd) por tu ruta real, por ejemplo: /home/usuario/proyectos/SOC-Subnet-Analyzer/subnet_analyzer.py).
 
-Debe mostrar algo como:
-```
-/usr/local/bin/subnet-analyzer -> /home/tu_usuario/SOC-Subnet-Analyzer/subnet_analyzer.py
-```
+5. Actualizar la caché del shell (Opcional)
 
-#### Verificar que `/usr/local/bin` está en el PATH
+Si la terminal no reconoce el comando inmediatamente tras la instalación, recarga el índice de ejecutables:
 
-```bash
-echo $PATH | tr ':' '\n' | grep -x "/usr/local/bin"
-```
+En Bash: hash -r
 
-Si **no aparece**, agrégalo a tu shell (ejemplo para Bash):
+En Zsh: rehash
 
-```bash
-echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
-```
+💻 Ejemplo de Uso
 
----
+Una vez configurado, puedes ejecutar la herramienta desde cualquier lugar del sistema:
 
-## 🚀 Uso
+# Ejecución global desde cualquier directorio
+subnet-analyzer
 
-### Desde cualquier carpeta (si instalaste globalmente)
 
-```bash
-subnet-analyzer 192.168.1.0/24
-```
+Salida esperada en terminal:
 
-### Desde la carpeta del proyecto
+==================================================
+           SOC SUBNET ANALYZER TOOL               
+==================================================
+[+] Ingresa la subred/IP en notacion CIDR (ej. 192.168.1.0/24): 10.0.4.0/22
 
-```bash
-python3 subnet_analyzer.py 192.168.1.0/24
-```
+[-] Resultados del Análisis:
+--------------------------------------------------
+* Dirección de Red:      10.0.4.0
+* Máscara de Subred:     255.255.252.0
+* Máscara Wildcard:      0.0.3.255
+* Dirección Broadcast:   10.0.7.255
+* Primer Host Útil:      10.0.4.1
+* Último Host Útil:      10.0.7.254
+* Total de Hosts Útiles: 1022
+==================================================
 
-### Ver ayuda
 
-```bash
-subnet-analyzer -h
-```
+🤝 Contribución
 
-### Ver versión
+¡Las contribuciones para mejorar la herramienta y expandir sus capacidades en operaciones SOC son bienvenidas!
 
-```bash
-subnet-analyzer -v
-```
+Haz un Fork de este repositorio.
 
----
+Crea una rama para tu nueva característica (git checkout -b feature/NuevaFeature).
 
-## 📊 Ejemplo de salida
+Realiza tus cambios y haz Commit (git commit -m 'Añadida nueva funcionalidad').
 
-```
-============================================================
-🔍 SOC Subnet Analyzer - Reporte de Incidentes
-============================================================
-📌 Dirección IP/CIDR: 192.168.1.0/24
-📅 Fecha y hora: 2026-09-16 20:30:15
-------------------------------------------------------------
-🌐 Dirección de Red: 192.168.1.0
-🔢 Máscara de Subred: 255.255.255.0
-📡 Broadcast: 192.168.1.255
-📊 Total de Hosts: 254
-🔹 Primer Host: 192.168.1.1
-🔸 Último Host: 192.168.1.254
-------------------------------------------------------------
-🛡️  Consultando reputación de IP (192.168.1.0) en AbuseIPDB...
-   🟢 Nivel de Abuso: 0%
-   📝 Reportes totales: 0
-   🌍 País: Desconocido
-   🏢 ISP: Desconocido
-------------------------------------------------------------
-🛡️  Regla de Firewall sugerida (aislar red):
-   iptables -A INPUT -s 192.168.1.0/24 -j DROP
-------------------------------------------------------------
-✅ Bitácora guardada en: bitacora_192.168.1.0.txt
-============================================================
-```
+Haz Push a la rama (git push origin feature/NuevaFeature).
 
----
+Abre un Pull Request.
 
-## 📂 Estructura del Proyecto
+📄 Licencia
 
-```
-SOC-Subnet-Analyzer/
-├── subnet_analyzer.py   # Script principal
-├── requirements.txt     # Dependencias de Python
-├── .env                 # Variables de entorno (NO se sube a GitHub)
-├── .gitignore           # Archivos ignorados por Git
-└── README.md            # Documentación
-```
-
----
-
-## 🛠️ Solución de problemas comunes
-
-### ❌ `ModuleNotFoundError: No module named 'requests'`
-
-**Causa:** Faltan las dependencias de Python.
-
-**Solución:** Instálalas con la Opción A o B del paso 3.
-
----
-
-### ❌ `python3: can't open file '.../main.py': [Errno 2] No such file or directory`
-
-**Causa:** El enlace simbólico o un alias apunta a un archivo que no existe (`main.py` en lugar de `subnet_analyzer.py`).
-
-**Solución:**
-
-1. Verifica a dónde apunta el enlace:
-   ```bash
-   ls -la /usr/local/bin/subnet-analyzer
-   ```
-
-2. Si apunta mal, elimínalo y créalo de nuevo:
-   ```bash
-   sudo rm -f /usr/local/bin/subnet-analyzer
-   sudo ln -sf "$(pwd)/subnet_analyzer.py" /usr/local/bin/subnet-analyzer
-   ```
-
-3. Revisa si tienes un comando duplicado en `~/.local/bin`:
-   ```bash
-   type subnet-analyzer
-   ```
-   Si aparece `/home/tu_usuario/.local/bin/subnet-analyzer`, bórralo:
-   ```bash
-   rm -f ~/.local/bin/subnet-analyzer
-   hash -r
-   ```
-
----
-
-### ❌ `No se encontró el archivo .env`
-
-**Causa:** El script busca el `.env` en la carpeta equivocada.
-
-**Solución:** Asegúrate de que el `.env` esté en la **misma carpeta** que `subnet_analyzer.py`.
-
-```bash
-ls -la ~/SOC-Subnet-Analyzer/.env
-```
-
-Si no existe, créalo:
-```bash
-cd ~/SOC-Subnet-Analyzer
-nano .env
-```
-
----
-
-### ❌ `❌ No se encontró ABUSEIPDB_API_KEY en el archivo .env`
-
-**Causa:** El nombre de la variable está mal escrito o el archivo tiene formato incorrecto.
-
-**Solución:** Verifica el contenido:
-```bash
-cat ~/SOC-Subnet-Analyzer/.env
-```
-
-Debe mostrar exactamente:
-```text
-ABUSEIPDB_API_KEY=tu_clave_real
-```
-
-Sin comillas, sin espacios alrededor del `=`, sin líneas vacías.
-
----
-
-### ❌ `❌ Error en la consulta: 401 Client Error`
-
-**Causa:** Tu API Key es inválida o está expirada.
-
-**Solución:** Verifica tu clave en [AbuseIPDB](https://www.abuseipdb.com/account/api) y actualízala en el `.env`.
-
----
-
-### ❌ `❌ Error en la consulta: 429 Client Error`
-
-**Causa:** Excediste el límite de consultas diarias del plan gratuito (1000/día).
-
-**Solución:** Espera 24 horas o actualiza tu plan en AbuseIPDB.
-
----
-
-### ❌ `Permission denied` al leer el `.env`
-
-**Solución:** Ajusta los permisos:
-```bash
-chmod 600 ~/SOC-Subnet-Analyzer/.env
-```
-
----
-
-## 🔐 Seguridad
-
-- **NUNCA** subas tu archivo `.env` a GitHub. Ya está incluido en `.gitignore`.
-- **NUNCA** compartas tu API Key públicamente.
-- Si accidentalmente subes tu `.env`, **revoca la clave inmediatamente** en AbuseIPDB y genera una nueva.
-
----
-
-## 🤝 Contribuciones
-
-¡Las contribuciones son bienvenidas! Si tienes ideas para mejorar esta herramienta:
-
-1. Haz un fork del repositorio.
-2. Crea una rama para tu funcionalidad: `git checkout -b feature/nueva-funcionalidad`.
-3. Haz commit de tus cambios: `git commit -m "✨ Añade nueva funcionalidad"`.
-4. Sube la rama: `git push origin feature/nueva-funcionalidad`.
-5. Abre un Pull Request.
-
----
-
-## 📜 Licencia
-
-Este proyecto está bajo la licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
-
----
-
-## 👤 Autor
-
-**splashartguy117-maker**
-- GitHub: [@splashartguy117-maker](https://github.com/splashartguy117-maker)
-
----
-
-## 🙏 Agradecimientos
-
-- [AbuseIPDB](https://www.abuseipdb.com/) por su API gratuita de inteligencia de amenazas.
-- Comunidad de ciberseguridad por la inspiración y el feedback.
-
----
-
-## ⭐ ¿Te gustó el proyecto?
-
-Si esta herramienta te resultó útil, considera darle una **estrella ⭐** en GitHub. ¡Motiva a seguir creando más herramientas para la comunidad de Blue Team!
+Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.
